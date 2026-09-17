@@ -23,4 +23,17 @@ func main(){
 	defer syscall.Close(fd)
 
 	fmt.Printf("Success: Raw socket created successfully (File Descriptor: %d)\n",fd)
+
+	destination := &syscall.SockaddrInet4{
+		Addr: [4]byte{127,0,0,1},
+	}
+
+	payload := []byte("HELLO FROM RAW IP")
+
+	err = syscall.Sendto(fd, payload,0,destination)
+
+	if err != nil {
+		log.Fatalf("Error: failed to send the packet: %v",err)
+	}
+	fmt.Printf("Packet sent successfully\n")
 }
