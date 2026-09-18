@@ -7,7 +7,7 @@ import (
 )
 
 func main(){
-	// Create a raw socket file descripor (fd)
+	// Create a raw socket file descriptor (fd)
 	// fd: a unique id number assigned by OS to the program to represent an open file or network connection
 	// AF_INET = IPv4
 	// SOCK_RAW = Raw packet access
@@ -36,4 +36,20 @@ func main(){
 		log.Fatalf("Error: failed to send the packet: %v",err)
 	}
 	fmt.Printf("Packet sent successfully\n")
+
+	fmt.Println("Waiting to receive the packet back...")
+
+	buf := make([]byte, 1024)
+
+	n, from, err := syscall.Recvfrom(fd, buf, 0)
+
+	if err != nil {
+		log.Fatalf("Error: failed to reveive data: %v",err)
+	}
+
+	if addr, ok := from.(*syscall.SockaddrInet4); ok {
+		fmt.Printf("Received %d bytes from %d.%d.%d.%d\n", n, addr.Addr[0],addr.Addr[1], addr.Addr[2], addr.Addr[3])
+		fmt.Printf("Raw bytes: %x\n",buf[:n])
+		fmt.Printf("As string: %q\n",buf[:n])
+	}
 }
